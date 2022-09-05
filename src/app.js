@@ -11,7 +11,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const database = getDatabase(app);
+
+
 
 
 const Buttons = ({id, action, type = 'button', val, out=''}) => 
@@ -54,8 +55,15 @@ const App = () => {
         setSign(event.target.value);
     }
 
-    const handleColor = (event) => {
+    const handleColor = (event, figure) => {
          setColor(event.target.value)
+         
+            const database = getDatabase(app);
+            setImmediate(ref(database), {
+                color: figure.color,
+                sign: figure.sign
+            })
+        
     }
     
     const figure = {
