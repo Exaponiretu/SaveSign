@@ -6,17 +6,16 @@ const Buttons = ({id, action, type = 'button', val, out=''}) => (
     </>
 )
 
-const Buttons2 = () => {
-    const [sign, setSign] = React.useState()
-    const [color, setColor] = React.useState()
+const Buttons2 = ({handleClick, handleColor}) => {
 
-    const handleClick = (event) => {
-        setSign(event.target.value);
-    }
 
-    const handleColor = (event) => {
-        setColor(event.target.value)
-   }
+  //  const handleClick = (event) => {
+   //     setSign(event.target.value);
+  //  }
+
+  //  const handleColor = (event) => {
+ //       setColor(event.target.value)
+ //  }
     return (
         <table className="center">
         <tbody>
@@ -42,4 +41,33 @@ const Buttons2 = () => {
     )
 }
 
-export default Buttons2;
+const Buttons3 = ({actionClick, actionColor, out='', val, colour}) => (
+    <>
+    <table className="center">
+        <tbody>
+            <tr>
+                <td><button className="buttons" id="sign1" onClick={actionClick} type="button" value={val[0]}>{out[0]}</button></td>
+                <td><button className="buttons" id="sign2" onClick={actionClick} type="button" value={val[1]}>{out[1]}</button></td>
+                <td><button className="buttons" id="sign3" onClick={actionClick} type="button" value={val[2]}>{out[2]}</button></td>
+                <td><button className="buttons" id="sign4" onClick={actionClick} type="button" value={val[3]}>{out[3]}</button></td>
+                <td><button className="buttons" id="sign5" onClick={actionClick} type="button" value={val[4]}>{out[4]}</button></td>
+                <td><button className="buttons" id="sign6" onClick={actionClick} type="button" value={val[5]}>{out[5]}</button></td>
+            </tr>
+            <tr>
+            <td><button className="buttons" id="color1" onClick={actionColor} type="button" value={colour[0]}></button></td>
+            <td><button className="buttons" id="color2" onClick={actionColor} type="button" value={colour[1]}></button></td>
+            <td><button className="buttons" id="color3" onClick={actionColor} type="button" value={colour[2]}></button></td>
+            <td><button className="buttons" id="color4" onClick={actionColor} type="button" value={colour[3]}></button></td>
+            <td><button className="buttons" id="color5" onClick={actionColor} type="button" value={colour[4]}></button></td>
+            <td><button className="buttons" id="color6" onClick={actionColor} type="button" value={colour[5]}></button></td>
+            </tr>
+        </tbody>
+    </table>
+        
+
+    </>
+)
+    
+
+
+export {Buttons, Buttons2, Buttons3}

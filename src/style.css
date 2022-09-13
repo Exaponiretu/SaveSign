@@ -1,4 +1,4 @@
-*{
+*{  
     margin: 0;
     padding: 0;
 }
@@ -98,5 +98,16 @@ h1 {
 }
 
 #canvas{
+    height: 1000px;
+    width: 100vw;
     border: 1px solid black;
+}
+
+.content{
+    display: none;
+    overflow: hidden;
+}
+
+.circle-picker{
+    width: 50px;
 }
