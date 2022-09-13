@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, createContext} from 'react';
+import React, { useEffect } from 'react';
 
 import './style.css';
 
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, update, get, onValue, off} from "firebase/database";
+import { getDatabase, ref, update, get, onValue} from "firebase/database";
 
 import Top from "./components/Top/Top";
-//import Buttons2 from "./components/Buttons/Buttons";
+import Buttons2 from "./components/Buttons/Buttons";
 
 const firebaseConfig = {
   databaseURL: "https://savesign-f7de7-default-rtdb.europe-west1.firebasedatabase.app/",
@@ -66,28 +66,6 @@ const NewName = ({action, holder}) => {
         </>
     )
 }
-
-const Canvas = ({mdown, draw, mout, mup}) => {
-
-
-    return (
-        <>
-            <canvas id="canvas" className="center" onMouseDown={mdown} onMouseMove={draw} onMouseOut={mout} onMouseUp={mup}></canvas>
-        </>
-    )
-}
-
-
-let canvas = {}
-if (document.querySelector("#canvas") !== undefined){
-    canvas = document.querySelector("#canvas")
-}
-let ctx = {}
-if (canvas !== null){
-    console.log(canvas)
-    console.log('brazil?')
-     ctx = canvas.getContext('2d')}
-
 
 const App = () => {
     let options = ''
@@ -166,152 +144,11 @@ const App = () => {
         })  
             loadBase()       
     }
-/*
-    const canvasRef = useRef(null)
-    const ctxRef = useRef(null)
-    const [isDrawing, setIsDrawing] = React.useState(false)
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        canvas.width = 100;
-        canvas.height = 100;
-
-        ctx = canvas.getContext('2d')
-        ctx.strokeStyle = '#000000';
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-        ctx.lineWidth = 10;
-        ctx.globalCompositeOperation = 'multiply';
-
-        ctx.current = ctx
-    }, [])
-
-    const start = ({nativeEvent})  => {
-        const {offsetX, offSetY} = nativeEvent
-        ctxRef.current.beginPath()
-        ctxRef.current.moveTo(offsetX, offSetY)
-        setIsDrawing(true)
-    }
-
-    const finish = () => {
-        ctxRef.current.closePath()
-        setIsDrawing(false)
-    }
-
-    const draw = ({nativeEvent}) => {
-        if(!isDrawing){
-            return
-        }
-        const {offsetX, offsetY} = nativeEvent
-        ctxRef.current.lineTo(offsetX, offsetY)
-        ctxRef.current.stroke()
-    }
-    */
-    
-    const canvas = useRef(null);
-
-    useEffect(() => {
-        canvas.current = document.querySelector("#canvas")
-    }, [document.querySelector("#canvas")])
-    console.log(canvas.current)
-    
-    //let canvas = {}
-  //  let canvas = createContext()
-  //  if (document.querySelector("#canvas") !== undefined){
-  //      canvas = document.querySelector("#canvas")
-  //  }
-
-    let ctx = useRef();
-
-    useEffect(() =>{
-        if(canvas !== undefined){
-            ctx = canvas.current.getContext('2d')
-            canvas.current.width = 500;
-            canvas.current.height = 500;
-           // ctx.current.strokeStyle = '#000000';
-            //ctx.current.lineJoin = 'round';
-            //ctx.current.lineCap = 'round';
-            //ctx.current.lineWidth = 10;
-            //ctx.current.globalCompositeOperation = 'multiply';
-        }
-
-    },[] )
-
-    //console.log(ctx)
-
-    //console.log(ctx.beginPath)
-
-    console.log(ctx)
-    
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
-
-    const mdown = (event) => {
-        isDrawing = true;
-        [lastX, lastY] = [event.pageX, event.pageY]; 
-    };
-   // let ctx = {}
-    if (canvas !== null){
-        console.log(canvas)
-        console.log('brazil')
-         //ctx = canvas.getContext('2d')
-         canvas.width = 500;
-         canvas.height = 500;
-         ctx.strokeStyle = '#000000';
-         ctx.lineJoin = 'round';
-         ctx.lineCap = 'round';
-         ctx.lineWidth = 10;
-         ctx.globalCompositeOperation = 'multiply';
-         console.log(ctx)
-            }
-    console.log(canvas)
-    console.log(ctx)
-    
-    const draw = (event) => {
-        
-   
-  
-        //console.log('im under the water')
-        if (!isDrawing) return; 
-        
-        console.log(canvas)
-        ctx = canvas.current.getContext('2d')
-        canvas.width = 500;
-        canvas.height = 500;
-        ctx.strokeStyle = '#000000';
-        ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
-        ctx.lineWidth = 10;
-        ctx.globalCompositeOperation = 'multiply';
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(event.pageX, event.pageY-800);
-        ctx.stroke();
-        console.log(ctx);
-        [lastX, lastY] = [event.pageX, event.pageY-800]; 
-        console.log(lastY)
-        console.log(lastX)
-        
-    }
-const mup = () => {
-    
-    console.log(ctx)
-    console.log(canvas)
-
-    isDrawing = false;
-}
-
-const mout = () => {
-    isDrawing = false;
-    console.log(isDrawing)
-}
-
-    
 
     return (
         <>  
             <Top />
+            <Buttons2 />
             <table className="center">
                 <tbody>
                     <tr>
@@ -345,7 +182,7 @@ const mout = () => {
                     </tr>
                 </tbody>
             </table>
-           <Canvas mdown={mdown} mup={mup} mout={mout} draw={draw} />
+            <canvas id="canvas" width="100" height="100" ></canvas>
         </>
     )
 }
