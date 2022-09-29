@@ -12,8 +12,7 @@ h1 {
     background-color: #FFD8A9;
     font-family: 'Courier New';
     font-size: max(12px, 2vh);
-    height: 2.3vh;
-    min-height: 14px;
+    height: 24px;
     width: 100%;
     min-width: 600px;
 }
@@ -82,59 +81,27 @@ h1 {
 }
 
 .output{
-    
     line-height: 0;
     font-size: max(7vw, 80px);
     display: grid;
-    height: 30vh;
+    height: 290px;      /*było 30vh*/
     align-content: space-evenly;
     text-shadow: 0 0 5px black;
     padding-bottom: 10px;
     text-align: center;
-   
-
-}
-
-.test{
-    display: block;
-}
-
-.test2{
-    width: max(40%, 240px);
-    margin-top: 150px;
-    margin-left: max(50px, 10vw);
-   
 }
 
 .outputCell{
-width: 400px;
-   
-}
-
-#table_bottom{
-    margin-top: 0;
-    /*margin-left: auto;*/
-    margin-right: 0px;
-    
+    width: 400px;
 }
 
 .bottom{
-    position: relative;
-    height: 40%;
-    width: 100%;
     min-width: 600px;
     background-color: #F1A661;
-    box-sizing:border-box;
-    
 }
 
-.bottom-column{
-    
-    position: relative;
-    width: 600px;
-    /*left: max(50%, 50px);*/
-    /*margin-left: -300px;*/
-    padding-left: max(40vw, 200px);
+.bottom-column{ 
+    padding-left: max(39vw, 200px);
     width: max(50vw, 300px);
 }
 
@@ -143,19 +110,9 @@ width: 400px;
     min-width: 600px;
 }
 
-.bottom-column-right{
-   
-    position: relative;
-    left: max(70%, 100px);
-    
-    
-  
-}
-
 table{
     border-collapse: collapse;
     border-spacing: 0;
-
 }
 
 #canvas{
@@ -165,13 +122,6 @@ table{
     overflow-x: scroll;
     display: block;
 }
-
-#canvas-div{
-    width: 1000px;
-}
-
-
-
 
 .content{
     display: none;
@@ -220,6 +170,61 @@ table{
     border-radius: 20%;
 }
 
+.buttons-shared{
+    background-color: #fbeee0;
+    border: 2px solid #422800;
+    border-radius: 30px;
+    box-shadow: #422800 4px 4px 0 0;
+    color: #422800;
+    cursor: pointer;
+    display: inline-grid;
+    font-weight: 600;
+    font-size: max(10px, 0.9vw);
+    padding: 0 0.8vw;
+    line-height: 50px;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: matpulation;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.buttons-shared:hover{
+    background-color: #fff;
+}
+
+.buttons-shared:active{
+    box-shadow: #422800 2px 2px 0 0;
+    transform: translate(2px, 2px);
+}
+
+.submit-user-buttons{  
+    font-size: max(10px, 0.9vw);
+}
+  
+.paint-buttons{
+    border-radius: 10px;
+    font-size: 12px;
+    padding: 0;
+    line-height: 30px;
+    margin-right: 12px;
+    width: auto;
+}
+   
+@media (min-width: 768px) {
+    .paint-buttons {
+    min-width: 40px;
+    padding: 0 5px;
+    }
+}
+@media (max-width: 768px){
+    h1{
+        font-size: 0;
+    }
+}
+
 .color-label{
     font-size: 12px;
     color: #422800;
@@ -251,7 +256,6 @@ table{
 
 .scroll-image:hover{
     border-bottom: 3px solid red;
-
     opacity: 0.8;
 }
 
@@ -274,88 +278,6 @@ table{
     transition-duration: 0s;
     background-color: #FDEEDC;
 }
-
-.submit-user-buttons{
-    
-  background-color: #fbeee0;
-  border: 2px solid #422800;
-  border-radius: 30px;
-  box-shadow: #422800 4px 4px 0 0;
-  color: #422800;
-  cursor: pointer;
-  display: inline-grid;
-  font-weight: 600;
-  font-size: max(10px, 0.9vw);
-  padding: 0 0.8vw;
-  line-height: 50px;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  margin-right: 10px;
-  margin-top: 10px;
-}
-
-.submit-user-buttons:hover {
-  background-color: #fff;
-}
-
-.submit-user-buttons:active {
-  box-shadow: #422800 2px 2px 0 0;
-  transform: translate(2px, 2px);
-}
-
-@media (min-width: 768px) {
-    .submit-user-buttonse {
-    min-width: 80px;
-    padding: 0 25px;
-  }
-}
-
-.paint-buttons{
-    background-color: #fbeee0;
-    border: 2px solid #422800;
-    border-radius: 10px;
-    box-shadow: #422800 4px 4px 0 0;
-    color: #422800;
-    cursor: pointer;
-    display: inline-grid;
-    font-weight: 600;
-    font-size: 12px;
-    padding: 0;
-    line-height: 30px;
-    text-align: center;
-    text-decoration: none;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    margin-right: 12px;
-    margin-top: 10px;
-    width: auto;
-}
-
-.paint-buttons:hover {
-    background-color: #fff;
-  }
-  
-  .paint-buttons:active {
-    box-shadow: #422800 2px 2px 0 0;
-    transform: translate(2px, 2px);
-  }
-  
-  @media (min-width: 768px) {
-      .paint-buttons {
-      min-width: 40px;
-      padding: 0 5px;
-    }
- 
-  }
-  @media (max-width: 768px){
-    h1{
-        font-size: 0;
-    }
-  }
 
 #reset{
     margin-right: 0px;
@@ -386,7 +308,6 @@ table{
     text-align:center;
     font-size: max(14px, 1.8vw);
     color: #422800;
-    
 }
 
 .table-right{
@@ -440,70 +361,51 @@ label, input{
     margin-left: 10px;
   }
 
-  #rectangle{
+  .icons{
     height: 40px;
     width: 40px; 
-    background-image: url("./components/square_icon2.png");
     background-size: 80%;
     background-repeat: no-repeat;
     background-position: center;
+  }
+
+  #rectangle{
+    background-image: url("./components/square_icon2.png");
   }
 
   #circle{
-    height: 40px;
-    width: 40px; 
     background-image: url("./components/circle_icon.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
   }
 
   #line{
-    height: 40px;
-    width: 40px; 
     background-image: url("./components/line_icon.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
   }
 
   #eraser{
-    height: 40px;
-    width: 40px; 
     background-image: url("./components/eraser_icon.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
     margin: 0 12px 0 0;
   }
 
   #undo{
-    height: 40px;
-    width: 40px; 
     background-image: url("./components/undo_icon.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
   }
 
   #redo{
-    height: 40px;
-    width: 40px; 
     background-image: url("./components/redo_icon.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center;
   }
 
-  #slider{
+  #slider, #brush-label{
     margin-left: 5vw;
     margin-right: 5vw;
   }
 
-  #brush-label{
-    margin-left: 5vw;
-    margin-right: 5vw;
-  }
+#background-label{
+    margin: 0 24px 0 10px;
+}
+
+#eraser-label{
+    margin: 0 12px 0 0;
+}
 
   .save-load{
     margin-top: 0px;
@@ -525,46 +427,31 @@ label, input{
   }
 
   #popup-button{
-    height: 40px;
-    width: 40px;
     background-color: #fbeee0;
     background-image: url("./components/x_icon.png");
     border: none;
-    background-size: 100%;
-    background-repeat: no-repeat;
     float: right;
-   
-  }
-
-  #popup-button:hover{
     cursor: pointer;
   }
 
   #popup-text{
     white-space: pre-wrap;
     text-align: center;
-    margin: 4vw 2vw 2vw 2vw;
+    margin: 4vw 2vw 1.7vw 2vw;
     font-size: max(12px, 1.3vw, 2.2vh);
-    line-height: max(2vw, 4vh);
+    line-height: max(13px, 2vw, 4vh);
   }
 
-  #en:hover{
-    cursor: pointer;
-    color: blue;
-    
-  }
-
-  #pl:hover{
+  #en:hover, #pl:hover{
     cursor: pointer;
     color: blue;
   }
 
-#pl{
-    font-size: max(12px, 1vw);
+#pl, #en{
+    font-size: max(12px, 1vw); 
 }
 
 #en{
-    font-size: max(12px, 1vw);
     margin-left: 10px;
 }
 
@@ -573,16 +460,7 @@ label, input{
     pointer-events: none;
 }
 
-#background-label{
-    margin: 0 24px 0 10px;
-}
-
-#eraser-label{
-    margin: 0 12px 0 0;
-}
-
-.enpl{
-   
+.enpl{  
     position: fixed;
     font-size: max(12px, 2vh);
     top: 0;
@@ -606,5 +484,15 @@ label, input{
     margin-right: 30px;
 }
 
+.problem1{
+    display: flex;
+    flex-direction: row;
+    margin-top: 150px;
+    margin-left: 50px;
+}
 
-
+.problem2{
+    display: block;
+    width: max(40%, 240px);
+    margin-left: 50px;
+}

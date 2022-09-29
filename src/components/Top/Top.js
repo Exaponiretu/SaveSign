@@ -3,8 +3,8 @@ import React from "react";
 
 const Top = () =>(
     <>
-        <h1 id='niggers'>Wybierz symbol i kolor. Wprowadź nową nazwe wciskając enter i przypisz jej nowy symbol wciskając "Save".</h1>
-        <hr/>
+        <h1 id='niggers'>Choose symbol and color, draw images and save them. Enter new name if you want to.</h1>
+        
     </>
 )
 

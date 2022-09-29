@@ -4,8 +4,15 @@
         <meta charset="utf-8"/>
         <title>Sign</title>
         <link rel="icon" type="image/x-icon" href="/favicon.png">
+        <script>
+            const load = () =>{
+                if (localStorage.getItem('sign') && localStorage.getItem('sign-color')){
+        document.getElementById('Output').innerHTML = localStorage.getItem('sign') 
+        document.getElementById('Output').style.color = localStorage.getItem('sign-color')}}
+        </script>
     </head>
-    <body>
+    <body onload="load()">
+        
         <div id="root"></div>
     </body>
 </html>
