@@ -1,4 +1,4 @@
-import React, { useEffect} from 'react';
+import React from 'react';
 import { CirclePicker} from 'react-color'
 
 import './style.css';
@@ -16,10 +16,10 @@ initializeApp(firebaseConfig);
 
 const Top = ({text,actionEn, actionPl}) =>(
     <>
-        <h1 id='niggers'>{text.top1}</h1>
-        <a id='pl2' className="enpl pl" onClick={actionPl}>pl</a>
+        <h1>{text.top1}</h1>
+        <p id='pl2' className="enpl pl" onClick={actionPl}>pl</p>
         <p className="enpl pe">/ </p>
-        <a id='en2' className="enpl en" onClick={actionEn}>en</a>         
+        <p id='en2' className="enpl en" onClick={actionEn}>en</p>         
     </>
 )
 
@@ -31,13 +31,13 @@ const Output = ({output, colour}) => (
 
 const Store = ({type = 'submit', action, text}) => (
         <>
-            <button id="store" className="submit-user-buttons" type={type} onClick={action}>{text.save}</button>
+            <button id="store" className="submit-user-buttons buttons-shared" type={type} onClick={action}>{text.save}</button>
         </>
     )
 
 const Reset = ({type = 'submit', action, text}) => (
         <>
-            <button className="submit-user-buttons" id="reset" type={type} title={text.resetTitle} onClick={action}>{text.reset}</button>
+            <button className="submit-user-buttons buttons-shared" id="reset" type={type} title={text.resetTitle} onClick={action}>{text.reset}</button>
         </>
     )
 
@@ -55,10 +55,16 @@ const Dropdown = ({ options, action, text}) => (
 
     const Popup = ({text, actionEn, actionPl, actionButton}) => (
         <div className='popup' id='popup'>
-            <button id='popup-button' type='button' onClick={actionButton}></button>
+            <button id='popup-button' className="icons" type='button' onClick={actionButton}></button>
             <p id='popup-text'>{text.popup}</p>
-            <a id='en' onClick={actionEn}>en</a> / 
-            <a id='pl' onClick={actionPl}>pl</a>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><p id='en' onClick={actionEn}>en /</p></td>
+                        <td><p id='pl' onClick={actionPl}>pl</p></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     )
 
@@ -66,8 +72,8 @@ const LoadImg = ({images, action, text}) => {
     if(images!==undefined){     //zbedny ternary niżej
         return(
             <div className="scroll-container">      
-                {images.length? images.map((image) => (
-                <img key={"img"+1+images.indexOf(image)} className="scroll-image" id={`image${1 +parseInt(images.indexOf(image)) }`} src={image} alt={"image"+1+images.indexOf(image)} onClick={action}/>
+                {images.length? images.map((image, index) => (
+                <img key={`image${1 + index }`} className="scroll-image" id={`image${1 + index }`} src={image} alt={`${1 + index }`} onClick={action}/>
                 )) : <p className="scroll-image" id="empty">{text.noSaved}</p>
                 }
             </div>
@@ -82,9 +88,9 @@ const NewName = ({action, holder, text}) => (
         </>
     )
 
-const Canvas = ({mdown, draw, mout, mup}) => (
+const Canvas = ({mdown, draw, mout, mup, action}) => (
         <>
-            <canvas id="canvas" onMouseDown={mdown} onMouseMove={draw} onMouseOut={mout} onMouseUp={mup}></canvas>
+            <canvas id="canvas" onMouseDown={mdown} onMouseMove={draw} onMouseOut={mout} onMouseUp={mup} onKeyDown={action} tabIndex={0}></canvas>
         </>
     )
 
@@ -160,8 +166,8 @@ const App = () => {
     let lastY = 0;
     
     const [base, setBase] = React.useState();
-    const [sign, setSign] = React.useState();
-    const [color, setColor] = React.useState();
+    const [sign, setSign] = React.useState(localStorage.getItem('sign') || undefined);
+    const [color, setColor] = React.useState(localStorage.getItem('sign-color') || undefined);
     const [user, setUser] = React.useState(localStorage.getItem('last-user')||'');
     const [thicc, setThicc] = React.useState(10);
     const [stamp, setStamp] = React.useState(false);
@@ -181,6 +187,9 @@ const App = () => {
     const [cStep, SetcStep] = React.useState(-1);
     const [size, setSize] = React.useState([0, 0]);
     const [text, setText] = React.useState(lang.en);
+    const [gumka, setGumka] = React.useState("rgb(0,0,0)");
+    const [brushColor, setBrushColor] = React.useState("rgb(255,255,255)")
+    const [erasers, setErasers] = React.useState(false)
 
     const canvas = React.useRef(null);
     const ctx = React.useRef();
@@ -189,7 +198,42 @@ const App = () => {
         sign,
         color
     }
-    
+
+    React.useEffect(() => {
+        loadImages();
+        loadBase();
+        Once();
+        cPush();
+    },[]);
+
+    React.useEffect(() =>{
+        localStorage.setItem('last-user', user)
+    }, [user])
+
+    React.useEffect(() => {
+        canvas.current = document.querySelector("#canvas")
+        ctx.current = canvas.current.getContext('2d')
+        canvas.current.width = width-360;
+        canvas.current.height = height-200;
+        ctx.current.strokeStyle = '#FFFFFF';
+        ctx.current.lineJoin = 'round';
+        ctx.current.lineCap = 'round';
+        ctx.current.lineWidth = 10;
+        ctx.current.miterLimit = 100;
+        ctx.current.fillStyle = 'black'
+        canvas.current.style.backgroundcolor = 'rgb(0,0,0)'
+        ctx.current.fillRect(0, 0, canvas.current.width, canvas.current.height)
+    }, [document.querySelector("#canvas")]);
+
+    React.useEffect(() => {
+        if(language === 'en'){
+            setText(lang.en)
+        }
+        else{
+            setText(lang.pl)
+        }
+    }, [language]);
+  
     const database = getDatabase();
 
     const loadBase = () =>{
@@ -199,54 +243,59 @@ const App = () => {
     }
 
     const loadImages = () => {
-        console.log('we milking base2')
         get(ref(database, user + "/images")).then((snapshot) => {
             snapshot.val() ? setImages(Object.values(snapshot.val())) : setImages([])
         })
     }
-
-    React.useEffect(() => {
-            loadImages()
-            loadBase()
-    },[])
         
     if (Object(base) !== undefined){options = Object.values(Object(base))}
-
-    React.useEffect(() =>{
-        localStorage.setItem('last-user', user)
-    }, [user])
     
     const handleClick = (event) => {
         setSign(event.target.value);
     }
-
+   
     const handleColor = (event) => {
             setColor(event.target.value)
     }
 
     const handleSave = () => {
+        let tempUser = user;
         const value = document.getElementById('newName').value
-        if (value !== ''){
+        if (value !== '' && figure.color !== undefined && figure.sign !== undefined && !options.includes(value)){
             setUser(value)
+            tempUser = value;
+            update(ref(database),{
+                [value]: { 
+                color: figure.color,
+                sign: figure.sign,
+                images: { }             
+                }
+            })
+            document.getElementById('newName').value = ''
+        }
+        if (value !== '' && !options.includes(value) && figure.color === undefined && figure.sign === undefined){
+            setUser(value)
+            tempUser = value
             update(ref(database),{
                 [value]: { 
                 color: '',
                 sign: '',
-                images: {
-                    
-                    }         
+                images: { }         
                 }
             })
             document.getElementById('newName').value = ''
-        }loadBase()  
-        if (figure.color !== undefined && figure.sign !== undefined && user !== ''){
-            update(ref(database, user), {
+        }
+        if (figure.color !== undefined && figure.sign !== undefined && tempUser !== '' && options.includes(tempUser)){
+            update(ref(database, tempUser), {
             color: figure.color,
             sign: figure.sign
-            })}
-            if (user === ''){
-            alert("Najpierw wprowadź nazwę i wciśnij enter lub wybierz nazwę z listy")
+        })}
+            if (localStorage.getItem("last-user") === '' && value === ""){
+            alert("Input or choose user, sign and color")
             }
+            loadBase();
+            localStorage.setItem('sign', document.getElementById('Output').innerHTML)
+            localStorage.setItem('sign-color', document.getElementById('Output').style.color)
     }
 
     const handleReset = () => {
@@ -258,7 +307,7 @@ const App = () => {
 
     const handleNewName = (event) => {
         const value = document.getElementById('newName').value
-            if (value !== '' && event.key === 'Enter'){
+            if (value !== '' && event.key === 'Enter' && !options.includes(value)){
                 setUser(value)
                 update(ref(database),{
                     [value]: { 
@@ -274,7 +323,7 @@ const App = () => {
     const handleChange = (event) => {
         document.getElementById('newName').value = event.target.value
         setUser(event.target.value)     
-        get(ref(database, event.target.value)).then ((snapshot) => {          //uwaga zmieniam z onvalue na get
+        get(ref(database, event.target.value)).then ((snapshot) => {          
         localStorage.setItem('sign', snapshot.val().sign)
         localStorage.setItem('sign-color', snapshot.val().color)
         setSign(snapshot.val().sign)
@@ -283,22 +332,7 @@ const App = () => {
         setloadNew(true)
         loadBase()
         loadImages()
-    }
-        
-    React.useEffect(() => {
-        canvas.current = document.querySelector("#canvas")
-        ctx.current = canvas.current.getContext('2d')
-        canvas.current.width = width-360;
-        canvas.current.height = height-200;
-        ctx.current.strokeStyle = '#FFFFFF';
-        ctx.current.lineJoin = 'round';
-        ctx.current.lineCap = 'round';
-        ctx.current.lineWidth = 10;
-        ctx.current.miterLimit = 100;
-        ctx.current.fillStyle = 'black'
-        canvas.current.style.backgroundcolor = 'black'
-        ctx.current.fillRect(0, 0, canvas.current.width, canvas.current.height)
-    }, [document.querySelector("#canvas")])
+    }    
 
     const draw = (event) => {       
         if (!isDrawing) return; 
@@ -368,8 +402,7 @@ const App = () => {
             setConfirm(!confirm)
             document.getElementById("circle").style.backgroundColor = "#00FF00"
         }
-        if (!lines && !rectangles && !circl && !stamp){
-           
+        if (!lines && !rectangles && !circl && !stamp){    
             isDrawing = true;
             [lastX, lastY] = [event.pageX-canvas.current.offsetLeft, event.pageY-canvas.current.getBoundingClientRect().top]; 
         }      
@@ -426,7 +459,6 @@ const App = () => {
             if (loadNew){
                 loadImages()
                 setloadNew(false)
-                console.log('x')
             }
             content[0].style.display = "block";
             contentBot[0].style.display = "none"
@@ -455,6 +487,7 @@ const App = () => {
             document.getElementById("canvas").style.backgroundColor = back
             ctx.current.fillStyle = back
             ctx.current.fillRect(0,0,canvas.current.width, canvas.current.height)
+            ctx.current.fillStyle = ctx.current.strokeStyle;
         }
         else{
             document.getElementById("canvas").style.backgroundColor = back
@@ -464,26 +497,29 @@ const App = () => {
         cPush()
     }    
 
-    const load = () => {                                                            ///UWAGA SPIERDOLONE
-        ctx.current.clearRect(0, 0, canvas.current.width, canvas.current.height)
-        console.log('naprawde?')
-        get(ref(database, user + "/images")).then( (snapshot) => {
-        var drawing = new Image()
-        drawing.src = snapshot.val()[pick]
-        drawing.onload = () =>{
-            ctx.current.drawImage(drawing, 0, 0, canvas.current.width, canvas.current.height)
+    const load = () => {                                                            
+        if (pick){
+            ctx.current.clearRect(0, 0, canvas.current.width, canvas.current.height)
+            get(ref(database, user + "/images")).then( (snapshot) => {
+            var drawing = new Image()
+            drawing.src = snapshot.val()[pick]
+            drawing.onload = () =>{
+                ctx.current.drawImage(drawing, 0, 0, canvas.current.width, canvas.current.height)
+            }
+            })
+            cPush()
         }
-        })
-        cPush()
     }
 
     const customColor = (event) => {
         ctx.current.strokeStyle = event.target.value
+        setBrushColor(event.target.value)
         ctx.current.fillStyle = event.target.value
     }
 
-    const nigger = (event) => {                     //co z tym zrobić?
+    const CirclesColors = (event) => {                     
         ctx.current.strokeStyle = event.hex;
+        setBrushColor(event.hex)
         ctx.current.fillStyle = event.hex
     }
     const backgroundColor = (event) => {
@@ -491,14 +527,53 @@ const App = () => {
         ctx.current.fillStyle = event.target.value
         ctx.current.fillRect(0,0,canvas.current.width, canvas.current.height)
         document.getElementById("canvas").style.backgroundColor = event.target.value
+        setGumka(event.target.value)
     }
 
     const eraser = () => {
+        document.getElementById("circle").style.backgroundColor = "#fbeee0"
+        document.getElementById("rectangle").style.backgroundColor = "#fbeee0"
+        document.getElementById("stample").style.backgroundColor = "#fbeee0"
+        document.getElementById("line").style.backgroundColor = "#fbeee0"
+        document.getElementById("fill").style.backgroundColor = "#fbeee0"
+        setErasers(!erasers)
+        if(!erasers){
+            document.getElementById("eraser").style.backgroundColor = "#00FF00"
+            document.getElementById("stample").disabled = "false"
+            document.getElementById("stample").style.cursor = "no-drop"
+            document.getElementById("line").style.cursor = "no-drop"
+            document.getElementById("line").disabled = "false"
+            document.getElementById("fill").style.cursor = "no-drop"
+            document.getElementById("fill").disabled = "false"
+            document.getElementsByClassName("circle-picker")[0].style.pointerEvents = "none"
+            document.getElementById("custom-color").style.cursor = "no-drop"
+            document.getElementById("custom-color").disabled = "false"
+            document.getElementById("background-color").style.cursor = "no-drop"
+            document.getElementById("background-color").disabled = "false"
+            ctx.current.strokeStyle = gumka 
+            ctx.current.fillStyle = gumka           
+        }
+        if(erasers){
+            document.getElementById("eraser").style.backgroundColor = "#fbeee0"
+            document.getElementById("stample").style.cursor = "pointer"
+            document.getElementById("stample").disabled = !erasers
+            document.getElementById("line").style.cursor = "pointer"
+            document.getElementById("line").disabled = !erasers
+            document.getElementById("fill").style.cursor = "pointer"
+            document.getElementById("fill").disabled = !erasers
+            document.getElementsByClassName("circle-picker")[0].style.pointerEvents = "auto"
+            document.getElementById("custom-color").style.cursor = "pointer"
+            document.getElementById("custom-color").disabled = !erasers
+            document.getElementById("background-color").style.cursor = "pointer"
+            document.getElementById("background-color").disabled = !erasers
+            ctx.current.strokeStyle = brushColor 
+        }
         setLine(false)
         setCircl(false)
         setRectangle(false)
         setStamp(false)
-        document.getElementById("canvas").style.background = 'black'? ctx.current.strokeStyle = 'rgb(0,0,0)': ctx.current.strokeStyle = document.getElementById("canvas").style.backgroundColor  
+        setFilling(false)
+        
     }
 
     const slider = (event) =>{
@@ -506,21 +581,10 @@ const App = () => {
         setThicc(event.target.value)
     }
     const line = () => {
-        document.getElementById("rectangle").disabled = !lines;
-        document.getElementById("circle").disabled = !lines;
-        document.getElementById("stample").disabled = !lines;
-        document.getElementById("eraser").disabled = !lines
-        if (lines){
-            document.getElementById("rectangle").style.cursor = "pointer"
-            document.getElementById("circle").style.cursor = "pointer"
-            document.getElementById("stample").style.cursor = "pointer"
-        }
-        else{
-            document.getElementById("rectangle").style.cursor = "not-allowed"
-            document.getElementById("circle").style.cursor = "not-allowed"
-            document.getElementById("stample").style.cursor = "not-allowed"
-        }   
-        lines? document.getElementById("line").style.backgroundColor = "#fbeee0": document.getElementById("line").style.backgroundColor = "#00FF00"
+        document.getElementById("circle").style.backgroundColor = "#fbeee0"
+        document.getElementById("rectangle").style.backgroundColor = "#fbeee0"
+        document.getElementById("stample").style.backgroundColor = "#fbeee0"
+        lines? document.getElementById("line").style.backgroundColor = "#fbeee0": document.getElementById("line").style.backgroundColor = "#00FF00"     
         setLine(!lines)
         setCircl(false)
         setRectangle(false)
@@ -531,21 +595,11 @@ const App = () => {
     }
 
     const rect = () => {
-        document.getElementById("line").disabled = !rectangles;
-        document.getElementById("circle").disabled = !rectangles;
-        document.getElementById("stample").disabled = !rectangles;
-        document.getElementById("eraser").disabled = !rectangles
-        if (rectangles){
-            document.getElementById("line").style.cursor = "pointer"
-            document.getElementById("circle").style.cursor = "pointer"
-            document.getElementById("stample").style.cursor = "pointer"
-        }
-        else{
-            document.getElementById("line").style.cursor = "not-allowed"
-            document.getElementById("circle").style.cursor = "not-allowed"
-            document.getElementById("stample").style.cursor = "not-allowed"
-        }
+        document.getElementById("circle").style.backgroundColor = "#fbeee0"
+        document.getElementById("line").style.backgroundColor = "#fbeee0"
+        document.getElementById("stample").style.backgroundColor = "#fbeee0"
         rectangles? document.getElementById("rectangle").style.backgroundColor = "#fbeee0": document.getElementById("rectangle").style.backgroundColor = "#00FF00"
+        
         setRectangle(!rectangles)
         setCircl(false)
         setLine(false)
@@ -553,55 +607,49 @@ const App = () => {
         if (confirm === true){
             setConfirm(false)
         }
+        if (erasers){
+            setFilling(true)
+            document.getElementById("fill").style.backgroundColor = "#00FF00"
+        }
+        if (erasers && filling && !circl){
+            setFilling(false)
+            document.getElementById("fill").style.backgroundColor = "#fbeee0"
+        }
     }
 
     const circle = () => {
-        document.getElementById("line").disabled = !circl;
-        document.getElementById("rectangle").disabled = !circl;
-        document.getElementById("stample").disabled = !circl;
-        document.getElementById("eraser").disabled = !circl
-        if (circl){
-            document.getElementById("rectangle").style.cursor = "pointer"
-            document.getElementById("line").style.cursor = "pointer"
-            document.getElementById("stample").style.cursor = "pointer"
-        }
-        else{
-            document.getElementById("rectangle").style.cursor = "not-allowed"
-            document.getElementById("line").style.cursor = "not-allowed"
-            document.getElementById("stample").style.cursor = "not-allowed"
-        }
-
-        setCircl(!circl)
+        document.getElementById("rectangle").style.backgroundColor = "#fbeee0"
+        document.getElementById("line").style.backgroundColor = "#fbeee0"
+        document.getElementById("stample").style.backgroundColor = "#fbeee0"
         circl? document.getElementById("circle").style.backgroundColor = "#fbeee0": document.getElementById("circle").style.backgroundColor = "#00FF00"
+        setCircl(!circl)
         setRectangle(false)
         setLine(false)
         setStamp(false)
         if (confirm === true){
             setConfirm(false)
         }
+        if (erasers){
+            setFilling(true)
+            document.getElementById("fill").style.backgroundColor = "#00FF00"
+        }
+        if (erasers && filling && !rectangles){
+            setFilling(false)
+            document.getElementById("fill").style.backgroundColor = "#fbeee0"
+        }
     }
 
     const stample = () => {
-        document.getElementById("line").disabled = !stamp;
-        document.getElementById("rectangle").disabled = !stamp;
-        document.getElementById("circle").disabled = !stamp;
-        document.getElementById("eraser").disabled = !stamp
-        if(stamp){
-            document.getElementById("rectangle").style.cursor = "pointer"
-            document.getElementById("circle").style.cursor = "pointer"
-            document.getElementById("line").style.cursor = "pointer"
-        }
-        else{
-            document.getElementById("rectangle").style.cursor = "not-allowed"
-            document.getElementById("circle").style.cursor = "not-allowed"
-            document.getElementById("line").style.cursor = "not-allowed"
-        }
-
-        setStamp(!stamp)
+        document.getElementById("rectangle").style.backgroundColor = "#fbeee0"
+        document.getElementById("line").style.backgroundColor = "#fbeee0"
+        document.getElementById("circle").style.backgroundColor = "#fbeee0"
+        document.getElementById("fill").style.backgroundColor = "#fbeee0"
         stamp? document.getElementById("stample").style.backgroundColor = "#fbeee0": document.getElementById("stample").style.backgroundColor = "#00FF00"
+        setStamp(!stamp)
         setRectangle(false)
         setLine(false)
         setCircl(false)
+        setFilling(false)
         if (confirm === true){
             setConfirm(false)
         }
@@ -611,17 +659,22 @@ const App = () => {
         filling? document.getElementById("fill").style.backgroundColor = "#fbeee0": document.getElementById("fill").style.backgroundColor = "#00FF00"
         ctx.current.fillStyle = ctx.current.strokeStyle
         setFilling(!filling)
+        setStamp(false)
     }
 
     const select = (event) => {
         setPick(event.target.id)
-        console.log(event.target.id)
+        if (pick !== event.target.id && pick !== undefined){
+            document.getElementById(event.target.id).style.borderBottom = "4px solid red"
+            document.getElementById(pick).style.borderBottom = "none"
+        }
+        if (pick === undefined){
+            document.getElementById(event.target.id).style.borderBottom = "4px solid red"
+        }
+        
     }
 
-    //https://youtu.be/FImgqhivLBw?t=7
-
-    function useWindowSize() {
-      
+    const useWindowSize = () => {
         React.useLayoutEffect(() => {
           function updateSize() {
             setSize([window.innerWidth, window.innerHeight]);
@@ -632,27 +685,18 @@ const App = () => {
         }, []);
         return size;
       }
-      const [width, height] = useWindowSize();
+
+    const [width, height] = useWindowSize();
 
     const changeLanguageEn = () =>{
         setlanguage('en')
+        document.getElementById('dropdown').style.width = '9vw'
     }
 
     const changeLanguagePl = () => {
         setlanguage('pl')
-        console.log('lmao?')
+        document.getElementById('dropdown').style.width = '12vw'
     }
-
-
-    React.useEffect(() => {
-        if(language === 'en'){
-            setText(lang.en)
-        }
-        else{
-            setText(lang.pl)
-        }
-        console.log('language')
-    }, [language])
 
     const changeDisplay = () => {
         localStorage.setItem("popup", 1)
@@ -661,72 +705,60 @@ const App = () => {
         document.getElementById("main-content").style.pointerEvents = "auto";
     }
 
-    React.useEffect(() => {
-        Once();
-
-    },[])
-        
     const Once = () => {
-        if (localStorage.getItem("popup") == 1){
+        if (localStorage.getItem("popup") === '1'){
             document.getElementById("popup").style.display = "none";
             document.getElementById("main-content").style.opacity = 1;
             document.getElementById("main-content").style.pointerEvents = "auto";
-            console.log('nigger')
         }
         else{
             localStorage.setItem("popup", 1)
         }
-        console.log(localStorage.getItem("popup"))
     }
 
+    const cKey = (event) => {
+        if (event.ctrlKey && event.key === "z"){
+            cUndo();
+        }
+        if (event.ctrlKey && event.key === "y"){
+            cRedo();
+        }
+    }
 
     return (
         <>  
-            
-
         <div id='main-content' >
-           
-        
             <Top text={text} actionEn={changeLanguageEn} actionPl={changeLanguagePl}/>
             <button type="button" className="collapsible" onClick={collapse}>{text.top2}</button>
                 <div className="content">
                     <table>
                         <tbody>
-                            <tr>
-                                
-                                <td><CirclePicker id="picker" onChange={nigger} style={{margin: 0}}/></td>
+                            <tr> 
+                                <td><CirclePicker id="picker" onChange={CirclesColors} style={{margin: 0}}/></td>
                                 <td><label className="color-label" htmlFor='custom-color'>{text.custom}</label><input className="custom-color" id='custom-color' type="color" onChange={customColor} defaultValue="#FFFFFF"></input></td>
-                                <td><button className="paint-buttons" type="clear" onClick={clear}>{text.clear}</button></td>
-                                
+                                <td><button className="paint-buttons buttons-shared" id="clear" type="clear" onClick={clear}>{text.clear}</button></td>
                                 <td><label className="color-label" id="background-label" htmlFor="background-picker">{text.background}</label><input className="custom-color" id='background-color' type="color" onChange={backgroundColor}></input></td>
-                                <td><label className="color-label" id="eraser-label">{text.eraser}</label><button className="paint-buttons" id="eraser" type="button" onClick={eraser}></button></td>
-                                <td><button className="paint-buttons" id="undo" onClick={cUndo}></button></td>
-                                <td><button className="paint-buttons" id='redo' onClick={cRedo}></button></td>
-                                <td><label className="color-label" id="brush-label" htmlFor="slider">{text.brush}{thicc}</label>
-                                <input type="range" min="2" max="40" defaultValue="10" id="slider" onChange={slider}></input> </td>
-                                <td><button className="paint-buttons" id="line" onClick={line}></button></td>
-                                <td><button className="paint-buttons" id="rectangle" onClick={rect}></button></td>
-                                <td><button className="paint-buttons" id="circle" onClick={circle}></button></td>
-                                <td><button className="paint-buttons" id="stample" onClick={stample}>{text.stamp}</button></td>
-
-                                <td><button className="paint-buttons" id="fill" onClick={fill}>{text.filled}</button></td>
-
-
+                                <td><label className="color-label" id="eraser-label">{text.eraser}</label><button className="paint-buttons buttons-shared icons" id="eraser" type="button" onClick={eraser}></button></td>
+                                <td><button className="paint-buttons buttons-shared icons" id="undo" onClick={cUndo}></button></td>
+                                <td><button className="paint-buttons buttons-shared icons" id='redo' onClick={cRedo}></button></td>
+                                <td><label className="color-label" id="brush-label" htmlFor="slider">{text.brush}{thicc}</label><input type="range" min="2" max="40" defaultValue="10" id="slider" onChange={slider}></input></td>
+                                <td><button className="paint-buttons buttons-shared icons" id="line" onClick={line}></button></td>
+                                <td><button className="paint-buttons buttons-shared icons" id="rectangle" onClick={rect}></button></td>
+                                <td><button className="paint-buttons buttons-shared icons" id="circle" onClick={circle}></button></td>
+                                <td><button className="paint-buttons buttons-shared" id="stample" onClick={stample}>{text.stamp}</button></td>
+                                <td><button className="paint-buttons buttons-shared" id="fill" onClick={fill}>{text.filled}</button></td>
                             </tr>
                         </tbody>
                     </table>
-                    <div id="test3">
-                        
+                    <div>    
                         <table >
                             <tbody>
-                                <tr>
-                                
-                                    <td id="canvas-div" ><Canvas  mdown={mdown} mup={mup} mout={mout} draw={draw} /></td>
-                                    
+                                <tr> 
+                                    <td id="canvas-div" ><Canvas  mdown={mdown} mup={mup} mout={mout} draw={draw} action={cKey}/></td>
                                     <td className="load-table">
                                         <LoadImg action={select} images={images} text={text}/>
-                                        <button className="paint-buttons save-load" id="save-load" type="submit" onClick={saveCanvas} >{text.save}</button>
-                                <button className="paint-buttons save-load" type="submit" id="save-load" onClick={load}>{text.load}</button>
+                                        <button className="paint-buttons save-load buttons-shared" id="save-load" type="submit" onClick={saveCanvas} >{text.save}</button>
+                                        <button className="paint-buttons save-load buttons-shared" type="submit" id="save-load" onClick={load}>{text.load}</button>
                                         </td>
                                 </tr>
                             </tbody>
@@ -734,55 +766,25 @@ const App = () => {
                     </div>
                     
                 </div>
-                <div className="bottom-content">
+            <div className="bottom-content">
             <Buttons3 actionClick={handleClick} actionColor={handleColor} out={["♠","✰","( ͡° ͜ʖ ͡°)","☢","κ","✾"]} val={["♠","✰","( ͡° ͜ʖ ͡°)","☢","κ","✾"]} colour={["red", "green", "blue", "magenta", "white", "yellow"]}/>
             <div className="bottom">
-                <div className='bottom-column'>
-
-                
-            <table className="table_bottom" id="table_bottom">
+            <div className='bottom-column'>         
+            <table >
                 <tbody>
                     <tr>
-                        <td className="outputCell"><p id='picked'>{text.sign}</p>
-                            <Output output={sign} colour={color}/>
-                        
-                        </td>
-                        <div className="test2">
-                        <td>
-
-                        <div className="test">
-                        <td className='kurwa'><NewName action={handleNewName} holder={user} text={text}/></td>
-                        <td className='kurwa'><Dropdown options={options} action={handleChange} text={text}/></td>
-                        </div>
-
-                    
-              <td><Store action={handleSave} text={text}/>
-              <Reset action={handleReset} text={text}/>
-              </td>
-              
-           
-            
-            
-
-                        </td>
-                        </div>
-
-                        </tr>
-                    </tbody>
+                        <td className="outputCell"><p id='picked'>{text.sign}{localStorage.getItem('last-user')}</p><Output output={sign} colour={color}/></td>
+                        <td className='problem1 '><NewName action={handleNewName} holder={user} text={text}/><Dropdown options={options} action={handleChange} text={text}/></td>                     
+                        <td className="problem2"><Store action={handleSave} text={text}/><Reset action={handleReset} text={text}/></td>                  
+                    </tr>
+                </tbody>
             </table>
             </div>
-         
-      
-                       
-                        
-                  
-           
-            </div>
-
-            </div>
-            </div>
-            <Popup text={text} actionEn={changeLanguageEn} actionPl={changeLanguagePl} actionButton={changeDisplay}/>
-        </>
+        </div>
+    </div>
+    </div>
+    <Popup text={text} actionEn={changeLanguageEn} actionPl={changeLanguagePl} actionButton={changeDisplay}/>
+    </>
     )
 }
 
