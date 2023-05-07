@@ -108,6 +108,7 @@ h1 {
 .bottom-content{
     width: 100%;
     min-width: 600px;
+    display:none;
 }
 
 table{
@@ -124,7 +125,7 @@ table{
 }
 
 .content{
-    display: none;
+    display: block;
     overflow: hidden;
     min-width: 600px;
 }

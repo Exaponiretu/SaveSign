@@ -97,16 +97,8 @@ const Canvas = ({mdown, draw, mout, mup, action}) => (
 const App = () => {
     const lang = {
         en: {
-            popup: "What at first was meant to be a simple Firebase experiment ended up as something of a drawing app.\n"
-            + "\nInput your name in the input field at the bottom right or choose an existing one. Save changes by pressing Enter or clicking the Save button.\n"
-            + "You can store chosen sign and its color to the database, as well as custom paintings.\n" 
-            + "To access drawing mode, click the top of the page.\n"
-            + "Drawing can be stored by pressing Save at the bottom right of the page.\n" 
-            + "Choose drawing to load by clicking on miniature on the right and press Load button.\n"
-            + "To change \"Stamp\" return to the page with signs and colors by pressing top of the page again.\n"
-            + "\n! WARNING !\n"
-            + "Changing background color will remove existing drawing.\n"
-            + "Database is public.",
+            popup: "\n\n\nUnfinished CSS. \n"
+            + "Done on 1920x1080 monitor.\n Try refreshing page if you encounter problem.", 
             top1: "Choose symbol and color, draw images and save them. Enter new user if you want to.",
             top2: "Click here to switch between signs and image drawing.",
             sign: "Currently chosen: ",
@@ -137,8 +129,7 @@ const App = () => {
             + "Wybierz, który obrazek chcesz wczytać klikając na jego miniature i wciskając przycisk Load.\n"
             + "By zmienić \"Pieczątkę\" wróć do poprzedniej strony z znakami i kolorami klikając ponownie górę strony.\n"
             + "\n! UWAGA !\n"
-            + "Zmiana koloru tła usunie istniejący rysunek.\n"
-            + "Baza danych jest publiczna.",
+            + "Zmiana koloru tła usunie istniejący rysunek.\n",
             top1: "Wybierz symbol i kolor, rysuj obrazki i zapisz je. Jeżeli chcesz, wprowadź nowego użytkownika.",
             top2: "Kliknij tutaj by zmienić pomiędzy znakami, a rysowaniem",
             sign: "Obecnie wybrany: ",
@@ -452,34 +443,44 @@ const App = () => {
     const collapse = () => {
         var contentBot = document.getElementsByClassName("bottom-content");
         var content = document.getElementsByClassName("content");
-        if (content[0].style.display === "block") {
-            content[0].style.display = "none";
-            contentBot[0].style.display = "block"
+        if (content[0].style.display === "none") {
+            content[0].style.display = "block";
+            contentBot[0].style.display = "none"
+            if (loadNew){
+                loadImages()
+                setloadNew(false)
+            }
         } else {
             if (loadNew){
                 loadImages()
                 setloadNew(false)
             }
-            content[0].style.display = "block";
-            contentBot[0].style.display = "none"
+            content[0].style.display = "none";
+            contentBot[0].style.display = "block"
         }     
     }
 
     const saveCanvas = () => {
-        let canvasImage = document.getElementById('canvas').toDataURL('image/png');
-        get(ref(database, user)).then((snapshot)=>{
-            let name = ''
-            if (snapshot.val().images === undefined){
-                name = "image1"
-            }
-            else{
-                name = "image" +  (parseInt(Object.keys(snapshot.val().images).length) +1)
-            }
-            update(ref(database, user + "/images"), {      
-                    [name]: canvasImage    
-                })
-        })
-        setImages(previous => [...previous, canvasImage])
+        if (user === ''){
+            window.alert("select user first");
+        }
+        else{
+            let canvasImage = document.getElementById('canvas').toDataURL('image/png');
+            get(ref(database, user)).then((snapshot)=>{
+                let name = ''
+                if (snapshot.val().images === undefined){
+                    name = "image1"
+                }
+                else{
+                    name = "image" +  (parseInt(Object.keys(snapshot.val().images).length) +1)
+                }
+                update(ref(database, user + "/images"), {      
+                        [name]: canvasImage    
+                    })
+            })
+            setImages(previous => [...previous, canvasImage])
+        }
+    
     }
 
     const clear = () => {
